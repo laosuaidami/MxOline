@@ -1,0 +1,59 @@
+<html>
+<head>
+<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+    alert('ssssssssssss')
+ $("p").click(function(){
+  $(this).hide();
+ });
+});
+</script>
+</head>
+
+<body>
+ <p class="gggdfdfdf">If you click on me, I will disappear.</p>
+
+
+
+</body>
+
+<script type="text/javascript">
+$(function(){
+        alert('123244')
+        var $precision = $('.gggdfdfdf'),
+            score = $precision.attr('data-star-scope'),
+            option =  {
+                        half		: true,
+                        path		: '../images/',
+                        precision	: true,
+                        size		: 24,
+                        starOff		: 'g_star.png',
+                        starOn		: 'r_star.png',
+                        starHalf	: 'h_star.png',
+                        hints       : ['极差', '差', '一般', '好评', '非常满意'],
+                        noRatedMsg  : '暂时还未获得评价！',
+                        readOnly    : true,
+                        score       : score
+                    };
+        $precision.raty(option);
+
+        $('.jsFavBtn').on('click', function(){
+            var type = $(this).attr('data-fav-type');
+            if(type == '1'){
+                favPraise($(this), 'fav' ,1 , '收藏');
+
+            }else if(type == '3'){
+                favPraise($(this), 'fav' ,3 );
+
+            }else if(type == '11'){
+                favPraise($(this), 'pra', 1);
+
+            }else if(type == '4'){
+                favPraise($(this), 'fav' ,4 );
+
+            }
+        });
+    });
+</script>
+</html>
