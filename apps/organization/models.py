@@ -41,6 +41,14 @@ class CourseOrg(models.Model):
         # 获取课程机构的教师数量
         return self.teacher_set.all().count()
 
+    def get_students_mums(self):
+        # 获取课程机构的学生数量
+        students_mums = 0
+        all_courses = self.course_set.all()
+        for course in all_courses:
+            students_mums += course.usercoures_set.all().count()
+        return students_mums
+
     def __str__(self):
         return self.name
 
@@ -55,6 +63,7 @@ class Teacher(models.Model):
     click_nums = models.IntegerField(default=0, verbose_name='点击数')
     fav_nums = models.IntegerField(default=0, verbose_name='收藏数')
     course_nums = models.IntegerField(default=0, verbose_name='课程数')
+    age = models.IntegerField(default=18, verbose_name='年龄')
     image = models.ImageField(upload_to='teacher/%Y/%m', verbose_name='头像', max_length=100, default='')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 

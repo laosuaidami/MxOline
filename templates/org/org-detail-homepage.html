@@ -12,11 +12,11 @@
     <div class="brief group_list">
         {% for cours in all_courses %}
             <div class="module1_5 box">
-                <a href="/group/groupdetail/13/"><img width="214" src="{{ MEDIA_URL }}{{ cours.image }}"/></a>
+                <a href="{% url 'course:course_detail' cours.id %}"><img width="214" src="{{ MEDIA_URL }}{{ cours.image }}"/></a>
                 <div class="des">
-                    <a href="/group/groupdetail/13/"><h2>{{ cours.name }}</h2></a>
+                    <a href="{% url 'course:course_detail' cours.id %}"><h2>{{ cours.name }}</h2></a>
                     <span class="fl">课时：<i class="key">{{ cours.learn_times }}小时</i></span>
-                    <span class="fr">参加人数：{{ cours.students }}</span>
+                    <span class="fr">参加人数：{{ cours.get_course_students_count }}</span>
                 </div>
                 <div class="bottom">
                     <span class="fl">{{ cours.course_org.name }}</span>

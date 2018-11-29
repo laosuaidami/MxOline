@@ -10,7 +10,7 @@
                 </a>
             </li>
             <li class="">
-                <a href="{% url 'teacher:teacher_list' %}">授课教师</a>
+                <a href="{% url 'org:teacher_list' %}">授课教师</a>
             </li>
             <li ><a href="{% url 'org:org_list' %}">授课机构</a></li>
         </ul>
@@ -52,7 +52,7 @@
                                                 <h2>{{ course.name }}</h2>
                                             </a>
                                             <span class="fl">时长：<i class="key">{{ course.learn_times }}小时</i></span>
-                                            <span class="fr">学习人数：{{ course.students }}&nbsp;&nbsp;</span>
+                                            <span class="fr">学习人数：{{ course.get_course_students_count }}&nbsp;&nbsp;</span>
                                         </div>
                                         <div class="bottom">
                                             <a href="{% url 'org:org_home' course.course_org.id %}"><span class="fl">{{ course.course_org.name }}</span></a>

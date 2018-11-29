@@ -27,5 +27,6 @@ urlpatterns = [
     url(r'^comments/(?P<course_id>\d+)/$', CourseCommentsView.as_view(), name='course_comments'),
     url(r'^add_comments/$', AddCommentsView.as_view(), name='add_comments'),
     url(r'^list1/$', CourseListView.as_view(), name='teacher_list'),
+    url(r'^video/(?P<video_id>\d+)/$', VideoPlayView.as_view(), name='video_play'),
 
 ]

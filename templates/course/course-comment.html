@@ -2,8 +2,12 @@
 {% load staticfiles %}
 {% block title %}公开课评论 - 慕学在线网{% endblock %}
 
+{% block course_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/muke/course/course-comment.css' %}" />
+{% endblock %}
 
 {% block content_or_clesson %}
+
     <!--发布评论-->
     <div id="js-pub-container" class="issques clearfix js-form">
         <div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake">

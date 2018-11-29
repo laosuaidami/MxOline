@@ -1,0 +1,40 @@
+{% extends 'course/course-video.html' %}
+{% load staticfiles %}
+{% block title %}{{ video.name }} - 慕学在线网{% endblock %}
+{% block course_css %}
+    <link rel="stylesheet" type="text/css" href="{%  static 'css/video-js.min.css' %}">
+    <style>
+        .video-js .vjs-big-play-button {
+          top: 50%;
+          left: 50%;
+        }
+    </style>
+{% endblock %}
+{% block course_js %}
+    <link rel="stylesheet" type="text/css" href="{%  static 'css/video-js.min.css' %}">
+{% endblock %}
+
+{% block custom_bread %}
+    <section>
+	<div class="wp">
+		<div class="crumbs">
+			<ul>
+				<li><a href="/">首页</a>></li>
+                <li><a href="{% url 'course:course_list' %}">公开课程</a>></li>
+				<li><a href="{% url 'course:course_detail' course.id %}">{{ course.name }}</a>></li>
+                <li>{{ video.name }}</li>
+			</ul>
+		</div>
+	</div>
+</section>
+{% endblock %}
+
+{% block course_info %}
+     <div style="width:950px;height:675px; margin-left: 340px">
+        <video id="example_video_1" class="video-js vjs-default-skin" controls preload="none" width="1200"
+               poster="http://video-js.zencoder.com/oceans-clip.png"
+               data-setup="{}">
+          <source src="{{ video.url }}" type='video/mp4'>
+        </video>
+      </div>
+{% endblock %}

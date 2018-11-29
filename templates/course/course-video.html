@@ -24,13 +24,16 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/mooc.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/muke/course/common-less.css' %}">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'css/muke/course/course-comment.css' %}" />
-
+    {% block course_css %}
+    {% endblock %}
+    {% block course_js %}
+    {% endblock %}
 
 {% endblock %}
 
 {% block content %}
     <div id="main">
+    {% block course_info %}
     <div class="course-infos">
         <div class="w pr">
             <div style="height: 15px" class="path">
@@ -50,13 +53,14 @@
                     <em></em>
                 </div>
                 <div class="static-item">
-                    <span class="meta-value"><strong>{{ course.students }}</strong></span>
+                    <span class="meta-value"><strong>{{ course.get_course_students_count }}</strong></span>
                     <span class="meta">学习人数</span>
                     <em></em>
                 </div>
             </div>
         </div>
     </div>
+    {% endblock %}
     <div class="course-info-main clearfix w has-progress">
 
         <div class="info-bar clearfix">
@@ -82,7 +86,7 @@
                         <ul class="video">
                             {% for video in lesson.get_lesson_video %}
                             <li>
-                                <a target="_blank" href='/video/3662' class="J-media-item studyvideo">{{ video.name }} ({{ video.learn_times }})
+                                <a target="_blank" href='{% url 'course:video_play' video.id %}' class="J-media-item studyvideo">{{ video.name }} ({{ video.learn_times }})
                                     <i class="study-state"></i>
                                 </a>
                             </li>

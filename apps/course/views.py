@@ -3,7 +3,7 @@ from django.views.generic import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 
-from course.models import Course, CourseResource
+from course.models import Course, CourseResource, Video
 from operation.models import UserFavorite, CourseComments, UserCoures
 from utils.mixin_utils import LoginRequiredMixin
 
@@ -63,6 +63,24 @@ class CourseDetailView(View):
         })
 
 
+def get_other_student_course(course):
+    """
+    获取用户课程和学过该课程的用户，学过其它的所有课程
+    :param course_id: 课程id
+    :param course: 课程
+    :return: relate_course 相关课程
+    """
+    user_courses = UserCoures.objects.filter(course=course)
+    user_ids = [user_course.user.id for user_course in user_courses]
+    all_user_course = UserCoures.objects.filter(user_id__in=user_ids)
+    # 取出所有课程的id
+    course_ids = [user_course.course.id for user_course in all_user_course if
+                  user_course.course.id != course.id]
+    # 获取学过该用户同学学过其他的所有课程
+    relate_course = Course.objects.filter(id__in=course_ids).order_by('-click_nums')[:5]
+    return relate_course
+
+
 class CourseInfoView(LoginRequiredMixin, View):
     """
     课程章节信息
@@ -70,13 +88,8 @@ class CourseInfoView(LoginRequiredMixin, View):
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
         self.add_course_2_usercoures(request, course)
-        user_courses = UserCoures.objects.filter(course=course)
-        user_ids = [user_course.user.id for user_course in user_courses]
-        all_user_course = UserCoures.objects.filter(user_id__in=user_ids)
-        # 取出所有课程的id
-        course_ids = [user_course.course.id for user_course in all_user_course if user_course.course.id != int(course_id)]
         # 取学过该用户同学学过其他的所有课程
-        relate_course = Course.objects.filter(id__in=course_ids).order_by('-click_nums')[:5]
+        relate_course = get_other_student_course(course)
         all_resources = CourseResource.objects.filter(course=course)
         return render(request, 'course/course-video.html', {
             'course': course,
@@ -101,14 +114,7 @@ class CourseCommentsView(LoginRequiredMixin, View):
     """
     def get(self, request, course_id):
         course = Course.objects.get(id=int(course_id))
-        user_courses = UserCoures.objects.filter(course=course)
-        user_ids = [user_course.user.id for user_course in user_courses]
-        all_user_course = UserCoures.objects.filter(user_id__in=user_ids)
-        # 取出所有课程的id
-        course_ids = [user_course.course.id for user_course in all_user_course if
-                      user_course.course.id != int(course_id)]
-        # 取学过该用户同学学过其他的所有课程
-        relate_course = Course.objects.filter(id__in=course_ids).order_by('-click_nums')[:5]
+        relate_course = get_other_student_course(course)
         all_resources = CourseResource.objects.filter(course=course)
         all_comments = CourseComments.objects.all()
         return render(request, 'course/course-comment.html', {
@@ -143,6 +149,30 @@ class AddCommentsView(View):
             return HttpResponse('{"status":"fail", "msg": "添加失败"}', content_type='application/json')
 
 
+class VideoPlayView(View):
+    """"""
+    def get(self, request, video_id):
+        video = Video.objects.get(id=int(video_id))
+        course = video.lesson.course
+        self.add_course_2_usercoures(request, course)
+        # 取学过该用户同学学过其他的所有课程
+        relate_course = get_other_student_course(course)
+        all_resources = CourseResource.objects.filter(course=course)
+        return render(request, 'course/course-play.html', {
+            'course': course,
+            'course_resources': all_resources,
+            'current_page': 'lesson',
+            'relate_courses': relate_course,
+            'video': video,
+        })
 
+    @staticmethod
+    def add_course_2_usercoures(request, course):
+        """讲课程添加到用户课程表中"""
+        # 查询用户是否已经关联了该课程
+        use_courses = UserCoures.objects.filter(user=request.user, course=course)
+        if not use_courses:
+            use_courses = UserCoures(user=request.user, course=course)
+            use_courses.save()
 
 

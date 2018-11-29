@@ -3,7 +3,7 @@ from django.views.generic import View
 from django.http import HttpResponse, JsonResponse
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
-from organization.models import CourseOrg, CityDict
+from organization.models import CourseOrg, CityDict, Teacher
 from organization.forms import UserAskForm
 
 from operation.models import UserFavorite
@@ -29,6 +29,10 @@ class OrgListView(View):
         category = request.GET.get('ct', '')
         if category:
             all_orgs = all_orgs.filter(catgory=category)
+
+        for org in all_orgs:
+            org.students = org.get_students_mums()
+            org.save()
 
         sort = request.GET.get('sort', '')
         if sort:
@@ -199,6 +203,73 @@ class AddFavView(View):
                 return HttpResponse('{"status":"success", "msg": "已收藏"}', content_type='application/json')
             else:
                 return HttpResponse('{"status":"fail", "msg": "收藏出错"}', content_type='application/json')
+
+
+class TeacherListView(View):
+    """
+    课程讲师列表页
+    """
+
+    def get(self, request):
+        all_teachers = Teacher.objects.all()
+
+        sorted_teacher = all_teachers.order_by('-click_nums')[:5]
+
+        sort = request.GET.get('sort', '')
+        if sort:
+            if sort == 'hot':
+                all_teachers = all_teachers.order_by('-click_nums')
+
+        # 对教师行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        # Provide Paginator with the request object for complete querystring generation
+        p = Paginator(all_teachers, 5, request=request)
+        teachers = p.page(page)
+        return render(request, 'teacher/teachers-list.html', {
+            'all_teachers': teachers,
+            'sort': sort,
+            'sorted_teacher': sorted_teacher,
+        })
+
+
+class TeacherDetailView(View):
+    """
+    课程详情
+    """
+    def get(self, request, teacher_id):
+        teacher = Teacher.objects.get(id=int(teacher_id))
+        all_courses = Course.objects.filter(course_teacher=teacher)
+
+        has_teacher_faved = False
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=int(teacher_id), fav_type=3):
+                has_teacher_faved = True
+
+        has_org_faved = False
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=teacher.org.id, fav_type=2):
+                has_org_faved = True
+
+        sorted_teacher = Teacher.objects.all().order_by('-click_nums')[:5]
+        return render(request, 'teacher/teacher-detail.html', {
+            'teacher': teacher,
+            'all_courses': all_courses,
+            'sorted_teacher': sorted_teacher,
+            'has_teacher_faved': has_teacher_faved,
+            'has_org_faved': has_org_faved,
+        })
+
+
+
+
+
+
+
+
 
 
 

@@ -14,7 +14,7 @@
                 </a>
             </li>
             <li class="">
-                <a href="{% url 'teacher:teacher_list' %}">授课教师</a>
+                <a href="{% url 'org:teacher_list' %}">授课教师</a>
             </li>
             <li ><a href="{% url 'org:org_list' %}">授课机构</a></li>
         </ul>
@@ -50,7 +50,7 @@
 						<span class="key">{{ course.desc }}</span>
 						<div class="prize">
 							<span class="fl">难度：<i class="key">{{ course.get_degree_display }}</i></span>
-							<span class="fr">学习人数：{{ course.students }}</span>
+							<span class="fr">学习人数：{{ course.get_course_students_count }}</span>
 						</div>
 						<ul class="parameter">
 							<li><span class="pram word3">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;长：</span><span>{{ course.learn_times }}小时</span></li>

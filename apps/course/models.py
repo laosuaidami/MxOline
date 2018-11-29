@@ -14,7 +14,6 @@ class Course(models.Model):
     detail = models.TextField(verbose_name='课程详情')
     degree = models.CharField(choices=(('cj', '初级'), ('zj', '中级'), ('gj', '高级')), max_length=2, verbose_name='等级')
     learn_times = models.IntegerField(default=0, verbose_name='学习时长')
-    students = models.IntegerField(default=0, verbose_name='学习人数')
     fav_nums = models.IntegerField(default=0, verbose_name='收藏人数')
     click_nums = models.IntegerField(default=0, verbose_name='点击数')
     image = models.ImageField(upload_to='course/%Y/%m', verbose_name='封面', max_length=100)
@@ -38,6 +37,10 @@ class Course(models.Model):
     def get_course_lesson(self):
         # 获取所有章节
         return self.lesson_set.all()
+
+    def get_course_students_count(self):
+        # 该课程的学习人数
+        return self.usercoures_set.all().count()
 
     def __str__(self):
         return self.name
