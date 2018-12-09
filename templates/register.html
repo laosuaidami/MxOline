@@ -69,8 +69,8 @@
             <p class="fl hd-tips">慕学网，在线学习平台！</p>
             <ul class="fr hd-bar">
                 <li>服务电话：<span>4001008031</span></li>
-                <li><a href="/login/">[登录]</a></li>
-                <li class="active"><a href="/register/">[注册]</a></li>
+                <li><a href="{% url 'users:login' %}">[登录]</a></li>
+                <li class="active"><a href="{% url 'users:register' %}">[注册]</a></li>
             </ul>
         </div>
     </div>
@@ -133,7 +133,7 @@
                     <!--</form>-->
                 <!--</div>-->
                 <div class="tab-form">
-                    <form id="email_register_form" autocomplete="off" method="post" action="{% url 'register' %}">
+                    <form id="email_register_form" autocomplete="off" method="post" action="{% url 'users:register' %}">
                         {% csrf_token %}
                         <div class="form-group marb20 {% if register_form.errors.email %} errorput {% endif %}">
                             <label>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
@@ -164,7 +164,7 @@
                         <input class="btn btn-green" id="jsEmailRegBtn" type="submit" value="注册并登录" />
                     </form>
                 </div>
-                <p class="form-p">已有账号？<a href="{% url 'login' %}">[立即登录]</a></p>
+                <p class="form-p">已有账号？<a href="{% url 'users:login' %}">[立即登录]</a></p>
             </div>
         </div>
     </div>

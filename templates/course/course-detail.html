@@ -5,7 +5,7 @@
     <script type="text/javascript" src="../ueditor/ueditor.config.js"></script>
     <script type="text/javascript" src="../ueditor/ueditor.all.min.js"></script>
 {% endblock %}
-{% block nav_class %}
+{% comment %}{% block nav_class %}
         <ul>
             <li ><a href="{% url 'index' %}">首页</a></li>
             <li class="active">
@@ -18,7 +18,7 @@
             </li>
             <li ><a href="{% url 'org:org_list' %}">授课机构</a></li>
         </ul>
-{% endblock %}
+{% endblock %}{% endcomment %}
 
 {% block curtom_bread %}
     <section>
@@ -140,7 +140,9 @@
                         </ul>
                     </div>
                     <div class="tab_cont tab_cont1">
-                        <p>{{ course.desc }}</p>
+                        {% autoescape off %}
+                        <p>{{ course.detail }}</p>
+                        {% endautoescape %}
                     </div>
                     <div class="tab_cont tab_cont2" >
                         <div class="comment">

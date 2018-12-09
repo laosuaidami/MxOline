@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'captcha',
     'pure_pagination',
+    'DjangoUeditor',
 ]
 AUTH_USER_MODEL = 'users.UserProfile'
 
@@ -145,6 +146,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 EMAIL_HOST = 'smtp.sina.com'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'dongyangsmart@sina.com'
@@ -154,6 +157,7 @@ EMAIL_FROM = 'dongyangsmart@sina.com'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # 配置分页
 PAGINATION_SETTINGS = {

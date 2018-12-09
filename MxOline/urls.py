@@ -19,21 +19,27 @@ from django.views.generic import TemplateView
 from django.views.static import serve
 
 from MxOline.settings import MEDIA_ROOT
-
+from users.views import IndexView, page_not_found, service_error
 
 import xadmin
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
+    url(r'^$', IndexView.as_view(), name='index'),
     url(r'^xadmin/', xadmin.site.urls),
+    url(r'^ueditor/', include('DjangoUeditor.urls')),   # 富文本相关url配置
     url(r'^captcha/', include('captcha.urls')),
-    url(r'^user/', include('users.urls')),
+    url(r'^user/', include('users.urls', namespace='users')),
     url(r'^org/', include('organization.urls', namespace='org')),
     url(r'^course/', include('course.urls', namespace='course')),
     url(r'^teacher/', include('course.urls', namespace='teacher')),
     url(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),  # 配置上传文件的访问处理
+    # url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}),  # 配置上传文件的访问处理
 
 ]
+
+# 全局404页面配置
+hander404 = 'page_not_found'
+hander500 = 'service_error'
 
 
 

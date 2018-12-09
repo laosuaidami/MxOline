@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.http import HttpResponse, JsonResponse
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 from organization.models import CourseOrg, CityDict, Teacher
 from organization.forms import UserAskForm
@@ -19,6 +20,11 @@ class OrgListView(View):
         all_orgs = CourseOrg.objects.all()  # 课程机构
         hot_orgs = all_orgs.order_by('-click_nums')[:3]
         all_citys = CityDict.objects.all()  # 城市
+
+        # 搜索机构
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_orgs = all_orgs.filter(Q(name__icontains=search_keywords) | Q(desc__icontains=search_keywords))
 
         # 筛选城市
         city_id = request.GET.get('city', '')
@@ -83,6 +89,8 @@ class OrgHomeView(View):
     def get(self, request, org_id):
         current_page = 'home'
         course_org = CourseOrg.objects.get(id=int(org_id))
+        course_org.click_nums += 1
+        course_org.save()
         has_fav = False
         if request.user.is_authenticated():
             if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
@@ -191,6 +199,24 @@ class AddFavView(View):
         exist_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=int(fav_type))
         if exist_records:
             exist_records.delete()   # 如果记录存在， 则表示用户取消收藏
+            if int(fav_type) == 1:
+                course = Course.objects.get(id=int(fav_id))
+                course.fav_nums -= 1
+                if course.fav_nums < 0:
+                    course.fav_nums = 0
+                course.save()
+            elif int(fav_type) == 2:
+                course_org = CourseOrg.objects.get(id=int(fav_id))
+                course_org.fav_nums -= 1
+                if course_org.fav_nums < 0:
+                    course_org.fav_nums = 0
+                course_org.save()
+            elif int(fav_type) == 3:
+                teacher = Teacher.objects.get(id=int(fav_id))
+                teacher.fav_nums -= 1
+                if teacher.fav_nums < 0:
+                    teacher.fav_nums = 0
+                teacher.save()
             return HttpResponse('{"status":"success", "msg": "收藏"}', content_type='application/json')
 
         else:
@@ -200,6 +226,18 @@ class AddFavView(View):
                 user_fav.fav_id = int(fav_id)
                 user_fav.fav_type = int(fav_type)
                 user_fav.save()
+                if int(fav_type) == 1:
+                    course = Course.objects.get(id=int(fav_id))
+                    course.fav_nums += 1
+                    course.save()
+                elif int(fav_type) == 2:
+                    course_org = CourseOrg.objects.get(id=int(fav_id))
+                    course_org.fav_nums += 1
+                    course_org.save()
+                elif int(fav_type) == 3:
+                    teacher = Teacher.objects.get(id=int(fav_id))
+                    teacher.fav_nums += 1
+                    teacher.save()
                 return HttpResponse('{"status":"success", "msg": "已收藏"}', content_type='application/json')
             else:
                 return HttpResponse('{"status":"fail", "msg": "收藏出错"}', content_type='application/json')
@@ -214,7 +252,13 @@ class TeacherListView(View):
         all_teachers = Teacher.objects.all()
 
         sorted_teacher = all_teachers.order_by('-click_nums')[:5]
-
+        # 搜索讲师
+        search_keywords = request.GET.get('keywords', '')
+        if search_keywords:
+            all_teachers = all_teachers.filter(Q(name__icontains=search_keywords)
+                                               | Q(work_company__icontains=search_keywords)
+                                               | Q(work_position__icontains=search_keywords)
+                                               | Q(points__icontains=search_keywords))
         sort = request.GET.get('sort', '')
         if sort:
             if sort == 'hot':
@@ -242,6 +286,8 @@ class TeacherDetailView(View):
     """
     def get(self, request, teacher_id):
         teacher = Teacher.objects.get(id=int(teacher_id))
+        teacher.click_nums += 1
+        teacher.save()
         all_courses = Course.objects.filter(course_teacher=teacher)
 
         has_teacher_faved = False

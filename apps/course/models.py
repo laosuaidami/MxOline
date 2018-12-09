@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db import models
+from DjangoUeditor.models import UEditorField
 
 from organization.models import CourseOrg, Teacher
 
@@ -11,12 +12,13 @@ class Course(models.Model):
     course_teacher = models.ForeignKey(Teacher, verbose_name='课程讲师')
     name = models.CharField(max_length=50, verbose_name='课程名')
     desc = models.CharField(max_length=300, verbose_name='课程描述')
-    detail = models.TextField(verbose_name='课程详情')
+    detail = UEditorField(verbose_name='课程详情', width=600, height=300, imagePath="course/ueditor/", filePath="course/ueditor/", default='')
+    is_banner = models.BooleanField(default=False, verbose_name='是否轮播')
     degree = models.CharField(choices=(('cj', '初级'), ('zj', '中级'), ('gj', '高级')), max_length=2, verbose_name='等级')
     learn_times = models.IntegerField(default=0, verbose_name='学习时长')
     fav_nums = models.IntegerField(default=0, verbose_name='收藏人数')
     click_nums = models.IntegerField(default=0, verbose_name='点击数')
-    image = models.ImageField(upload_to='course/%Y/%m', verbose_name='封面', max_length=100)
+    image = models.ImageField(upload_to='course/%Y/%m', verbose_name='封面', max_length=100, null=True, blank=True)
     category = models.CharField(max_length=20, verbose_name='课程类别', default='后端开发')
     tag = models.CharField(max_length=10, verbose_name='课程标签', default='')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
@@ -42,8 +44,24 @@ class Course(models.Model):
         # 该课程的学习人数
         return self.usercoures_set.all().count()
 
+    get_course_students_count.short_description = '课程学习人数'
+
+    def go_to(self):
+        from django.utils.safestring import mark_safe
+        return mark_safe("<a href='http://www.projectsedu.com'>跳转</>")
+
+    go_to.short_description = '跳转'
+
     def __str__(self):
         return self.name
+
+
+class BannerCourse(Course):
+
+    class Meta:
+        verbose_name = '轮播课程'
+        verbose_name_plural = verbose_name
+        proxy = True  # 设置这个参数不会在生成表，但在xadmin中会生成视图
 
 
 class Lesson(models.Model):
